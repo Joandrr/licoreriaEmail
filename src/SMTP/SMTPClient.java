@@ -25,7 +25,7 @@ public class SMTPClient {
     }
     public SMTPClient(){
         this.server = SocketUtils.MAIL_SERVER;
-        this.receptorUser = "fernando@gmail.com";
+        this.receptorUser = "joandanielrr@gmail.com";
         this.emisorUser = "grupo05sc@tecnoweb.org.bo";
         this.port = SocketUtils.SMTP_PORT;
     }
@@ -125,7 +125,7 @@ public class SMTPClient {
                                 "  <p><b>Nombre:</b> Evans Balcázar</p>\r\n" +
                                 "  <p><b>Email:</b> evans@gmail.com</p>\r\n" +
                                 "  <p><b>Teléfono:</b> 76773834</p>\r\n" +
-                                "  <p><b>Rol:</b> barbero</p>\r\n" +
+                                "  <p><b>Rol:</b> empleado</p>\r\n" +
                                 "  <hr>\r\n" +
                                 "  <p>Bienvenido al sistema 🎉</p>\r\n" +
                                 "</body>\r\n" +
@@ -147,28 +147,36 @@ public class SMTPClient {
     }
 
     public void executeMailFrom(BufferedReader input,DataOutputStream output) throws IOException {
-        String command = "MAIL FROM: " + this.getEmisorUser() + "\r\n";
+        String command = "MAIL FROM:<" + this.getEmisorUser() + ">\r\n";
         System.out.println("Comando: " + command);
         output.writeBytes(command);
         System.out.println("Respuesta servidor a Mail From: " + input.readLine());
     }
     public void executeHelo(BufferedReader input,DataOutputStream output) throws IOException {
-        String command = "HELO " + this.getServer() + " \r\n";
+        String command = "HELO " + this.getServer() + "\r\n";
         System.out.println("Comando: " + command);
         output.writeBytes(command);
         System.out.println("Respuesta servidor a HELO: " + input.readLine());
     }
     public void executeReceivedTo(BufferedReader input,DataOutputStream output) throws IOException {
-        String command = "RCPT TO: " + this.getReceptorUser() + "\r\n";
+        String command = "RCPT TO:<" + this.getReceptorUser() + ">\r\n";
         System.out.println("Comando: " + command);
         output.writeBytes(command);
-        System.out.println("Respuesta servidor a RCPT TO: " + input.readLine());
+        String response = input.readLine();
+        System.out.println("Respuesta servidor a RCPT TO: " + response);
+        if (response == null || !response.startsWith("250")) {
+            throw new IOException("RCPT TO rechazado: " + response);
+        }
     }
     public void executeData(BufferedReader input,DataOutputStream output) throws IOException {
         String command = "DATA \r\n";
         System.out.println("Comando: " + command);
         output.writeBytes(command);
-        System.out.println("Respuesta servidor a DATA: " + input.readLine());
+        String response = input.readLine();
+        System.out.println("Respuesta servidor a DATA: " + response);
+        if (response == null || !response.startsWith("354")) {
+            throw new IOException("DATA rechazado: " + response);
+        }
     }
     public void executeOnlySubject(String subject,BufferedReader input,DataOutputStream output) throws IOException {
         String command = "SUBJECT: " + subject + "\r\n";
@@ -177,15 +185,18 @@ public class SMTPClient {
         System.out.println("Respuesta servidor a Data Subject: " + input.readLine());
     }
     public void executeDataSubject(String subject,String context,BufferedReader input,DataOutputStream output) throws IOException {
-        String command = "SUBJECT: " + subject + "\r\n";
-        command += "\r\n";
+        StringBuilder command = new StringBuilder();
+        command.append("From: <").append(this.getEmisorUser()).append(">\r\n");
+        command.append("To: <").append(this.getReceptorUser()).append(">\r\n");
+        command.append("Subject: ").append(subject).append("\r\n");
+        command.append("\r\n");
         if (context != null) {
-            command += context + "\r\n";
+            command.append(context).append("\r\n");
         }
-        command += ".\r\n";
-        System.out.println("comando: "+ command);
-        output.writeBytes(command);
-        System.out.println("Respuesta servidor a Data Subject: " + input.readLine());
+        command.append("\r\n.\r\n");
+        System.out.println("comando: " + command);
+        output.writeBytes(command.toString());
+        System.out.println("Respuesta servidor a DATA: " + input.readLine());
     }
 
     public void executeQuitCommand(BufferedReader input, DataOutputStream output) throws IOException{
@@ -196,11 +207,17 @@ public class SMTPClient {
     }
     //antes de usar el metodo requiero instanciar el emisor y receptor
     public void sendDataToServer(String subject,String context){
+        Socket socket = null;
+        DataOutputStream output = null;
+        BufferedReader input = null;
         try{
-            Socket socket = new Socket(this.getServer(),this.getPort());
-            DataOutputStream output = new DataOutputStream(socket.getOutputStream());
-            BufferedReader input = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+            socket = new Socket(this.getServer(),this.getPort());
+            output = new DataOutputStream(socket.getOutputStream());
+            input = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             if (SocketUtils.esEntradaValida(socket,input,output)) {
+                // Leer saludo inicial del servidor (220 ...)
+                String greeting = input.readLine();
+                System.out.println("Mensaje del servidor: " + greeting);
                 this.executeHelo(input,output);
                 this.executeMailFrom(input,output);
                 this.executeReceivedTo(input,output);
@@ -208,9 +225,21 @@ public class SMTPClient {
                 this.executeDataSubject(subject,context,input,output);
                 this.executeQuitCommand(input,output);
             }
-            SocketUtils.closeServices(socket,input,output);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+        } catch (Exception e) {
+            System.out.println("throw - " + e.getMessage());
+            try {
+                if (input != null && output != null) {
+                    this.executeQuitCommand(input, output);
+                }
+            } catch (Exception ignore) {
+            }
+        } finally {
+            try {
+                if (socket != null && input != null && output != null) {
+                    SocketUtils.closeServices(socket, input, output);
+                }
+            } catch (Exception ignore) {
+            }
         }
     }
 
@@ -222,31 +251,33 @@ public class SMTPClient {
 
 
     public static void main(String[] args) {
-//        String emisor = "muerte201469@gmail.com";
-//        String receptor = "grupo14sc@tecnoweb.org.bo";
-        String receptor = "muerte201469@gmail.com";
+        // Modo CLI:
+        //   java -cp out SMTP.SMTPClient <fromEmail> <toEmail> <subject> [context]
+        if (args != null && args.length >= 3) {
+            String emisor = args[0];
+            String receptor = args[1];
+            String subject = args[2];
+            String context = (args.length >= 4) ? args[3] : null;
+            String server = SocketUtils.MAIL_SERVER;
+
+            TecnoUtils.validarCorreosDeUsuario(emisor, receptor);
+            SMTPClient smtpClient = new SMTPClient(server, emisor, receptor);
+            smtpClient.sendDataToServer(subject, context);
+            return;
+        }
+
+        // Demo por defecto (si no pasas args)
+        String receptor = "grupo05sc@tecnoweb.org.bo";
         String emisor = "grupo05sc@tecnoweb.org.bo";
         String subject = """
-                listarproductossimple[">=15"]
-                """;
-        String cuerpo = """
-+----+----------+----------+------------------------------+-----------+----------+
-| ID | Nombre   | Apellido | Email                        | Teléfono  | Rol      |
-+----+----------+----------+------------------------------+-----------+----------+
-| 1  | Juan     | Pérez    | juan.barbero@barberia.bo     | 72000002  | barbero  |
-| 2  | Carlos   | López    | carlos.barbero@barberia.bo   | 72000003  | barbero  |
-+----+----------+----------+------------------------------+-----------+----------+
-""".replace("\n", "\r\n");
-
+            listarUsuarios["*"]
+            """;
         subject = GeneralMethods.parsearSubjectComillaTriple(subject);
-        //String subject = "createuser[\"8\",\"ZSZ\",\"SZSZSZ\",\"123333\",\"SSS@gmail.com\",\"7563872\",\"admin\"]";
-        //subject = GeneralMethods.parsearSubjectComillaTriple(subject);
         String context = null;
         String server = SocketUtils.MAIL_SERVER;
-        TecnoUtils.validarCorreosDeUsuario(emisor,receptor);
-        SMTPClient smtpClient = new SMTPClient(server,emisor,receptor);
-        smtpClient.sendDataToServer(subject,cuerpo);
-        //smtpClient.executeSMTPClientHTML();
+        TecnoUtils.validarCorreosDeUsuario(emisor, receptor);
+        SMTPClient smtpClient = new SMTPClient(server, emisor, receptor);
+        smtpClient.sendDataToServer(subject, context);
     }
 
 

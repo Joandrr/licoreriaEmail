@@ -1,12 +1,8 @@
 package Backend.Commands;
 
-import Backend.Horarios.CrearHorario.CreateHorarioSQLQuery;
-import Backend.Horarios.dto.HorarioDTO;
+
 import Backend.Utils.GeneralMethods.GeneralMethods;
-import Backend.Utils.GeneralMethods.Resultado;
-import Database.PGSQLClient;
 import SMTP.SMTPClient;
-import Utils.SQLUtils;
 
 public class Comando {
     public static void executeComandoDemon(String emisor,String receptor,String server,String subject){
@@ -15,13 +11,13 @@ public class Comando {
         String comandos = """
 USUARIOS
 
-createUser["nombre","apellido","email","telefono","password","rol"]
+createUser["nombre","email","password","rol: propietario|vendedor|cliente"]
 
-updateUser["idUsuario","nombre","apellido","email","telefono","password","rol: barbero|cliente|secretaria|propietario"]
+updateUser["idUsuario","nombre","email","password","rol: propietario|vendedor|cliente"]
 
 listarUsuarios["*"] | listarUsuarios["rol"]
 
-cambiarEstadoUsuario["idUsuario","estado: activo | eliminado"]
+cambiarEstadoUsuario["idUsuario","estado: eliminado"]
 
 
 PRODUCTOS
@@ -38,13 +34,6 @@ updateServicio["servicioId","nombre","descripcion","precio","duracion"]
 listarServicioSimple[">15"] | listarServicioSimple["*"]
 listarServicioIntervalo["5","10"]
 cambiarEstadoServicio["servicioId","activo|eliminado"]
-
-
-HORARIOS
-createHorario["barberoId","diaSemana","horaInicio","horaFin"]
-updateHorario["barberoId","horarioId","horaInicio","horaFin"]
-deleteHorario["barberoId","horarioId"]
-listarHorarioDeBarbero["barberoId"]
 
 
 PAGOS

@@ -1,9 +1,5 @@
 package Backend.Examen;
 
-import Backend.Horarios.CrearHorario.CreateHorario;
-import Backend.Horarios.DeleteHorario.DeleteHorario;
-import Backend.Horarios.ListarHorario.ListarHorarioDeBarbero;
-import Backend.Horarios.UpdateHorario.UpdateHorario;
 import Backend.Pagos.CreatePago.CreatePago;
 import Backend.Pagos.DeletePago.DeletePago;
 import Backend.Pagos.ListPagos.ListarPagoDeVenta;
@@ -33,7 +29,7 @@ public class TestExamen {
         String server = SocketUtils.MAIL_SERVER;
         Scanner sc = new Scanner(System.in);
 
-        System.out.println("=== Sistema De Peluqueria y Barberia Faceritos Via Email===");
+        System.out.println("=== Sistema De Licorería Via Email ===");
         System.out.println("Escribe un comando o 'exit' / 'salir' / 'quit' para terminar.");
 
         while (true) {
@@ -135,27 +131,6 @@ public class TestExamen {
                 ListarPagoDeVenta.executeListarPagoDeVenta(emisor,receptor,server,entrada);
                 continue;
             }
-            //Para Horarios
-            if(comando.equalsIgnoreCase("createHorario")){
-                System.out.println("Ejecutando Crear Horario");
-                CreateHorario.executeCrearHorario(emisor,receptor,server,entrada);
-                continue;
-            }
-            if(comando.equalsIgnoreCase("updateHorario")){
-                System.out.println("Ejecutando Delete Pago");
-                UpdateHorario.executeUpdateHorario(emisor,receptor,server,entrada);
-                continue;
-            }
-            if(comando.equalsIgnoreCase("deleteHorario")){
-                System.out.println("Ejecutando Listar pago de venta");
-                DeleteHorario.executeDeleteHorario(emisor,receptor,server,entrada);
-                continue;
-            }
-            if(comando.equalsIgnoreCase("listarHorarioDeBarbero")){
-                System.out.println("Ejecutando Listar pago de venta");
-                ListarHorarioDeBarbero.executeListarHorarioDeBarbero(emisor,receptor,server,entrada);
-                continue;
-            }
             /// demas metodos
 
             //en el caso de que no sea ninguna
@@ -174,9 +149,9 @@ public class TestExamen {
 
         // ---------- USUARIOS ----------
         System.out.println("👤 USUARIOS");
-        System.out.println("createUser[\"nombre\",\"apellido\",\"email\",\"telefono\",\"password\",\"rol\"]");
+        System.out.println("createUser[\"nombre\",\"email\",\"password\",\"rol\"]");
         System.out.println("   → Crea un nuevo usuario en el sistema.");
-        System.out.println("updateUser[\"id\",\"nombre\",\"apellido\",\"email\",\"telefono\",\"password\",\"rol\"]");
+        System.out.println("updateUser[\"id\",\"nombre\",\"email\",\"password\",\"rol\"]");
         System.out.println("   → Actualiza los datos de un usuario existente.");
         System.out.println("listarUsuarios[\"rol\"]  o  listarUsuarios[\"*\"]");
         System.out.println("   → Lista usuarios por rol o todos si se usa *.");
@@ -197,7 +172,7 @@ public class TestExamen {
         // ---------- SERVICIOS ----------
         System.out.println("💈 SERVICIOS");
         System.out.println("createServicio[\"nombre\",\"descripcion\",\"precio\",\"duracion\"]");
-        System.out.println("   → Crea un nuevo servicio (peluquería/barbería).");
+        System.out.println("   → Crea un nuevo servicio.");
         System.out.println("updateServicio[\"id\",\"nombre\",\"descripcion\",\"precio\",\"duracion\"]");
         System.out.println("   → Actualiza los datos de un servicio existente.");
         System.out.println("listarServicioSimple[\"signovalor\"]  Ej: listarServicioSimple[>50]");

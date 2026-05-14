@@ -23,12 +23,14 @@ public class ListarUsuario {
 
         Resultado<IdentificadorStrDTO> resultadoMensajeDTO = IdentificadorStrDTO.createMensajePatronDTO(subject);
         if (!resultadoMensajeDTO.esExitoso()) {
+            System.out.println("[USUARIOS][LISTAR] ERROR: " + resultadoMensajeDTO.getError());
             smtpClientResponse.sendDataToServer("SQL ListUser -  fallo en campos",resultadoMensajeDTO.getError() + "\r\n");
             return;
         }
         IdentificadorStrDTO mensajeUsuarioDTO = resultadoMensajeDTO.getValor();
         ListarSQLUser listarSQLUser = new ListarSQLUser();
         String resultList = listarSQLUser.executeListarUsuarios(pgsqlClient,mensajeUsuarioDTO.message);
+        System.out.println("[USUARIOS][LISTAR] RESULT:\n" + resultList);
         smtpClientResponse.sendDataToServer("SQL ListUser",resultList + "\r\n");
 
 

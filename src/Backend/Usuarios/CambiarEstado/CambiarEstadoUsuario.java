@@ -21,12 +21,14 @@ public class CambiarEstadoUsuario {
         SMTPClient smtpClientResponse = new SMTPClient(server,receptor,emisor);
         Resultado<UsuarioEstadoDTO> resultadoEstado = UsuarioEstadoDTO.crearUsuarioEstadoFromSubject(subject);
         if(!resultadoEstado.esExitoso()){
+            System.out.println("[USUARIOS][ESTADO] ERROR: " + resultadoEstado.getError());
             smtpClientResponse.sendDataToServer("SQL Cambiar Estado: Fallo de campos", resultadoEstado.getError() + "\r\n");
             return;
         }
         UsuarioEstadoDTO usuarioEstadoDTO = resultadoEstado.getValor();
         CambiarEstadoUsuarioSQL cambiarEstadoUsuarioSQL = new CambiarEstadoUsuarioSQL();
         String strResult = cambiarEstadoUsuarioSQL.executeUpdateEstadoUsuario(pgsqlClient,usuarioEstadoDTO);
+        System.out.println("[USUARIOS][ESTADO] RESULT:\n" + strResult);
         smtpClientResponse.sendDataToServer("SQL Cambiar Estado",strResult + "\r\n");
     }
     public static void executeCambiarEstadoUsuario(String emisor,String receptor,String server,String subject){

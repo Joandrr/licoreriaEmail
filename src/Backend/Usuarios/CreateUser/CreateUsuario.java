@@ -23,6 +23,7 @@ public class CreateUsuario {
         SMTPClient smtpClientResponse = new SMTPClient(server,receptor,emisor);
         Resultado<CreateUsuarioDTO> resultadoCreateUser = CreateUsuarioDTO.crearUsuarioMedianteSubject(subject);
         if(!resultadoCreateUser.esExitoso()){
+            System.out.println("[USUARIOS][CREATE] ERROR: " + resultadoCreateUser.getError());
             smtpClientResponse.sendDataToServer("SQL Create User: Fallo Campos",resultadoCreateUser.getError() + "\r\n");
             return;
         }
@@ -30,6 +31,7 @@ public class CreateUsuario {
         CreateSQLQuery createSQLQuery = new CreateSQLQuery();
 
         String strCreateUser = createSQLQuery.executeInsertUserQuery(pgsqlClient, createUsuarioDTO);
+        System.out.println("[USUARIOS][CREATE] RESULT:\n" + strCreateUser);
         smtpClientResponse.sendDataToServer("SQL CreateUser",strCreateUser + "\r\n");
     }
     public static void executeCreateUsuario(String emisor,String receptor,String server,String subject){

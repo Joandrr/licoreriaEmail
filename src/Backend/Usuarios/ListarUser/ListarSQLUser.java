@@ -5,10 +5,17 @@ import java.sql.*;
 public class ListarSQLUser {
 
     private static final String SQL_LISTAR_TODOS =
-            "SELECT id, nombre, apellido, email, telefono, rol FROM usuarios ORDER BY id ASC";
+        "SELECT u.id, u.nombre, u.email, r.nombre AS rol " +
+        "FROM \"user\" u " +
+        "LEFT JOIN rol r ON u.rol_id = r.id " +
+        "ORDER BY u.id ASC";
 
     private static final String SQL_LISTAR_POR_ROL =
-            "SELECT id, nombre, apellido, email, telefono, rol FROM usuarios WHERE rol = ? AND deleted_at is null ORDER BY id ASC";
+        "SELECT u.id, u.nombre, u.email, r.nombre AS rol " +
+        "FROM \"user\" u " +
+        "LEFT JOIN rol r ON u.rol_id = r.id " +
+        "WHERE lower(r.nombre) = lower(?) " +
+        "ORDER BY u.id ASC";
 
 
     public String executeListarUsuarios(PGSQLClient pgsqlClient, String filtroRol) {
@@ -55,9 +62,7 @@ public class ListarSQLUser {
     private String formatearUsuario(ResultSet rs, int numero) throws SQLException {
         long id = rs.getLong("id");
         String nombre = rs.getString("nombre");
-        String apellido = rs.getString("apellido");
         String email = rs.getString("email");
-        String telefono = rs.getString("telefono");
         String rol = rs.getString("rol");
 
         return String.format(
@@ -65,12 +70,10 @@ public class ListarSQLUser {
                 "Usuario %d:\r\n" +
                         "ID: %d\r\n" +
                         "Nombre: %s\r\n" +
-                        "Apellido: %s\r\n" +
                         "Email: %s\r\n" +
-                        "Teléfono: %s\r\n" +
                         "Rol: %s\r\n" +
                         "----------------------------------------------------\r\n",
-                numero, id, nombre, apellido, email, telefono, rol
+            numero, id, nombre, email, rol
         );
     }
 }

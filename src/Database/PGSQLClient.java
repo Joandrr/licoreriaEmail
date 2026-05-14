@@ -28,9 +28,9 @@ public class PGSQLClient {
     }
     public PGSQLClient(){
         this.server = SocketUtils.MAIL_SERVER;
-        this.user = SQLUtils.DB_USER;
-        this.password = SQLUtils.DB_PASSWORD;
-        this.bdName = SQLUtils.DB_NAME;
+        this.user = SQLUtils.DB_GRUPO_USER;
+        this.password = SQLUtils.DB_GRUPO_PASSWORD;
+        this.bdName = SQLUtils.DB_GRUPO_DB_NAME;
         //this.bdTable = SQLUtils.DB_TABLE;
     }
 

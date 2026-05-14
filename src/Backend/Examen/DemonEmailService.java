@@ -1,10 +1,6 @@
 package Backend.Examen;
 
 import Backend.Commands.Comando;
-import Backend.Horarios.CrearHorario.CreateHorario;
-import Backend.Horarios.DeleteHorario.DeleteHorario;
-import Backend.Horarios.ListarHorario.ListarHorarioDeBarbero;
-import Backend.Horarios.UpdateHorario.UpdateHorario;
 import Backend.Pagos.CreatePago.CreatePago;
 import Backend.Pagos.DeletePago.DeletePago;
 import Backend.Pagos.ListPagos.ListarPagoDeVenta;
@@ -54,11 +50,11 @@ public class DemonEmailService {
     }
     public void executeDemonEmailService(){
         System.out.println("=== SERVICIO DE EMAIL INICIADO ===");
-        System.out.println("Cuenta: grupo14sc@tecnoweb.org.bo");
+        System.out.println("Cuenta: grupo05sc@tecnoweb.org.bo");
         System.out.println("Servidor BD: mail.tecnoweb.org.bo");
-        System.out.println("Base de datos: db_grupo14sc");
+        System.out.println("Base de datos: db_grupo05sc");
         System.out.println("================================\n");
-        String grupoReceptor = "grupo14sc@tecnoweb.org.bo";
+        String grupoReceptor = "grupo05sc@tecnoweb.org.bo";
         try {
             int ciclo = 1;
             while (true) {
@@ -118,9 +114,13 @@ public class DemonEmailService {
 
 
         //podriamos hacer un comando previo para que busque en los comandos solamente si no lo encuentra retornar que no hay ese comando
-        boolean tieneCorcheteYComillas = TecnoUtils.tieneCorchetesYComillas(subject);
-        if (!tieneCorcheteYComillas) {
-            smtpClient.sendDataToServer("ERROR.. COMANDO NO VALIDO","Comando no valido no tiene corchetes o no esta en el formato establecido\r\n");
+        boolean tieneCorchetesYComillas = TecnoUtils.tieneCorchetesYComillas(subject);
+        boolean tieneCorchetes = subject != null
+                && subject.contains("[")
+                && subject.contains("]")
+                && subject.indexOf('[') < subject.lastIndexOf(']');
+        if (!tieneCorchetes && !tieneCorchetesYComillas) {
+            smtpClient.sendDataToServer("ERROR.. COMANDO NO VALIDO","Comando no valido: se esperaban corchetes, ejemplo: comando[\"a\",\"b\"]\r\n");
             return;
         }
         int indexCorcheteInicial = subject.indexOf("[");
@@ -285,27 +285,7 @@ public class DemonEmailService {
             ListarPagoDeVenta.executeListarPagoDeVentaDemon(emisor,receptor,server,subject);
             return;
         }
-        //Para Horarios
-        if(comando.equalsIgnoreCase("createHorario")){
-            System.out.println("Ejecutando Crear Horario");
-            CreateHorario.executeCrearHorarioDemon(emisor,receptor,server,subject);
-            return;
-        }
-        if(comando.equalsIgnoreCase("updateHorario")){
-            System.out.println("Ejecutando Delete Pago");
-            UpdateHorario.executeUpdateHorarioDemon(emisor,receptor,server,subject);
-            return;
-        }
-        if(comando.equalsIgnoreCase("deleteHorario")){
-            System.out.println("Ejecutando Listar pago de venta");
-            DeleteHorario.executeDeleteHorarioDemon(emisor,receptor,server,subject);
-            return;
-        }
-        if(comando.equalsIgnoreCase("listarHorarioDeBarbero")){
-            System.out.println("Ejecutando Listar pago de venta");
-            ListarHorarioDeBarbero.executeListarHorarioDeBarberoDemon(emisor,receptor,server,subject);
-            return;
-        }
+
         if(comando.equalsIgnoreCase("comandos")){
             System.out.println("Ejecutando ver comandos");
             Comando.executeComandoDemon(emisor,receptor,server,subject);
@@ -317,7 +297,7 @@ public class DemonEmailService {
 
     }
     public static void main(String[] args){
-        Pop3Client pop3Client = new Pop3Client(SocketUtils.MAIL_SERVER,"grupo14sc","grup014grup014*");
+        Pop3Client pop3Client = new Pop3Client(SocketUtils.MAIL_SERVER,"grupo05sc","grup005grup005*");
         pop3Client.vaciarMensajesDeGrupo();
         DemonEmailService demonEmailService = new DemonEmailService();
         demonEmailService.executeDemonEmailService();

@@ -8,7 +8,7 @@ import java.sql.*;
 
 public class UpdateSQLQuery {
     private static final String SQL_UPDATE =
-            "UPDATE usuarios SET nombre = ?, apellido = ?, email = ?, telefono = ?, password = ?, rol = ? WHERE id = ?";
+            "UPDATE \"user\" SET rol_id = ?, nombre = ?, email = ?, password = ? WHERE id = ?";
 
     public String executeUpdateUserQuery(PGSQLClient pgsqlClient, UpdateUsuarioDTO updateUsuarioDTO){
         String databaseUrl = "jdbc:postgresql://" + pgsqlClient.getServer() + ":5432/" + pgsqlClient.getBdName();
@@ -30,14 +30,16 @@ public class UpdateSQLQuery {
                 //si no existe entonces realiza el update
             }
             //si los emails son iguales igual que actualize
+            Integer rolId = GeneralUsuarioSQLUtils.findRolIdByNombre(connection, updateUsuarioDTO.rol);
+            if (rolId == null) {
+                return "Error: rol inválido '" + updateUsuarioDTO.rol + "'. Roles permitidos: propietario, vendedor, cliente.";
+            }
             try (PreparedStatement ps = connection.prepareStatement(SQL_UPDATE)) {
-                ps.setString(1, updateUsuarioDTO.nombre);
-                ps.setString(2, updateUsuarioDTO.apellido);
+                ps.setInt(1, rolId);
+                ps.setString(2, updateUsuarioDTO.nombre);
                 ps.setString(3, updateUsuarioDTO.email);
-                ps.setString(4, updateUsuarioDTO.telefono);
-                ps.setString(5, updateUsuarioDTO.password);
-                ps.setString(6, updateUsuarioDTO.rol);
-                ps.setLong(7, updateUsuarioDTO.id);
+                ps.setString(4, updateUsuarioDTO.password);
+                ps.setLong(5, updateUsuarioDTO.id);
                 int filas = ps.executeUpdate();
                 if (filas == 0) {
                     return "El usuario fue modificado/eliminado durante la operación. No se actualizó nada.";
@@ -47,16 +49,12 @@ public class UpdateSQLQuery {
                                 "--------------------------\r\n" +
                                 "ID: %d\r\n" +
                                 "Nombre: %s\r\n" +
-                                "Apellido: %s\r\n" +
                                 "Email: %s\r\n" +
-                                "Teléfono: %s\r\n" +
                                 "Rol: %s\r\n" +
                                 "--------------------------\r\n",
                         updateUsuarioDTO.id,
                         updateUsuarioDTO.nombre,
-                        updateUsuarioDTO.apellido,
                         updateUsuarioDTO.email,
-                        updateUsuarioDTO.telefono,
                         updateUsuarioDTO.rol
                 );
             }

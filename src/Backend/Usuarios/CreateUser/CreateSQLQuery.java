@@ -8,7 +8,7 @@ import java.sql.*;
 
 public class CreateSQLQuery {
     private static final String SQL_INSERT =
-            "INSERT INTO usuarios (nombre, apellido, email, telefono, password, rol) VALUES (?, ?, ?, ?, ?, ?)";
+            "INSERT INTO \"user\" (rol_id, nombre, email, password) VALUES (?, ?, ?, ?)";
     public String executeInsertUserQuery(PGSQLClient pgsqlClient, CreateUsuarioDTO createUsuarioDTO) {
         String databaseUrl = "jdbc:postgresql://" + pgsqlClient.getServer() + ":5432/" + pgsqlClient.getBdName();
 
@@ -18,13 +18,16 @@ public class CreateSQLQuery {
                 return "Error: ya existe un usuario con el correo '" + createUsuarioDTO.email + "'.";
             }
 
+            Integer rolId = GeneralUsuarioSQLUtils.findRolIdByNombre(connection, createUsuarioDTO.rol);
+            if (rolId == null) {
+                return "Error: rol inválido '" + createUsuarioDTO.rol + "'. Roles permitidos: propietario, vendedor, cliente.";
+            }
+
             try (PreparedStatement ps = connection.prepareStatement(SQL_INSERT)) {
-                ps.setString(1, createUsuarioDTO.nombre);
-                ps.setString(2, createUsuarioDTO.apellido);
+                ps.setInt(1, rolId);
+                ps.setString(2, createUsuarioDTO.nombre);
                 ps.setString(3, createUsuarioDTO.email);
-                ps.setString(4, createUsuarioDTO.telefono);
-                ps.setString(5, createUsuarioDTO.password);
-                ps.setString(6, createUsuarioDTO.rol);
+                ps.setString(4, createUsuarioDTO.password);
 
                 int filas = ps.executeUpdate();
 
@@ -36,15 +39,11 @@ public class CreateSQLQuery {
                     "Usuario creado exitosamente:\r\n" +
                             "--------------------------\r\n" +
                             "Nombre: %s\r\n" +
-                            "Apellido: %s\r\n" +
                             "Email: %s\r\n" +
-                            "Teléfono: %s\r\n" +
                             "Rol: %s\r\n" +
                             "--------------------------\r\n",
                     createUsuarioDTO.nombre,
-                    createUsuarioDTO.apellido,
                     createUsuarioDTO.email,
-                    createUsuarioDTO.telefono,
                     createUsuarioDTO.rol
             );
         } catch (Exception e) {

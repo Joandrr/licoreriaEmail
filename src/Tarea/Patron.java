@@ -23,7 +23,7 @@ public class Patron {
 
     public static void main(String[] args) {
         // send to patron with SMTP
-        String emisor = "fernandopadilla170@gmail.com";
+        String emisor = "joandanielrr@gmail.com";
         String receptor = "grupo05sc@tecnoweb.org.bo";
         String server = SocketUtils.MAIL_SERVER;
         TecnoUtils.validarCorreosDeUsuario(emisor,receptor);

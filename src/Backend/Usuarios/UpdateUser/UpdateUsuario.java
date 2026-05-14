@@ -25,12 +25,14 @@ public class UpdateUsuario {
         SMTPClient smtpClientResponse = new SMTPClient(server,receptor,emisor);
         Resultado<UpdateUsuarioDTO> resultadoUpdate = UpdateUsuarioDTO.crearUpdateUsuarioMedianteSubject(subject);
         if(!resultadoUpdate.esExitoso()){
+            System.out.println("[USUARIOS][UPDATE] ERROR: " + resultadoUpdate.getError());
             smtpClientResponse.sendDataToServer("SQL Update User: Fallo de campos",resultadoUpdate.getError() + "\r\n");
             return;
         }
         UpdateUsuarioDTO updateUsuarioDTO = resultadoUpdate.getValor();
         UpdateSQLQuery updateSQLQuery = new UpdateSQLQuery();
         String resultadoCreateUser = updateSQLQuery.executeUpdateUserQuery(pgsqlClient, updateUsuarioDTO);
+        System.out.println("[USUARIOS][UPDATE] RESULT:\n" + resultadoCreateUser);
         smtpClientResponse.sendDataToServer("SQL Update User",resultadoCreateUser + "\r\n");
     }
     public static void executeUpdateUsuario(String emisor,String receptor,String server,String subject){

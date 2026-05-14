@@ -10,8 +10,8 @@ public class UpdateUsuarioDTO extends CreateUsuarioDTO{
     public UpdateUsuarioDTO(){
         super();
     }
-    public UpdateUsuarioDTO(Long id, String nombre, String apellido, String email, String telefono, String password, String rol,String estado,String deletedAt) {
-        super(nombre, apellido, email, telefono, password, rol,estado,deletedAt);
+    public UpdateUsuarioDTO(Long id, String nombre, String email, String password, String rol) {
+        super(nombre, email, password, rol);
         this.id = id;
     }
 
@@ -19,13 +19,13 @@ public class UpdateUsuarioDTO extends CreateUsuarioDTO{
         String[] data = TecnoUtils.procesarString(subject);
         System.out.println(data.toString());
         System.out.println(data.length);
-        if (data.length < 7) {
-            return Resultado.error("Error: se esperaban al menos 7 campos (id, nombre, apellido, email, telefono, password, rol)");
+        if (data.length < 5) {
+            return Resultado.error("Error: se esperaban al menos 5 campos (id, nombre, email, password, rol)");
         }
         String id = data[0];
         String subjectParaReutilizarCreate = String.format(
-                "[\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\"]",
-                data[1], data[2], data[3], data[4], data[5], data[6]
+                "[\"%s\",\"%s\",\"%s\",\"%s\"]",
+                data[1], data[2], data[3], data[4]
         );
         Resultado<CreateUsuarioDTO> resultadoCreateDTO = CreateUsuarioDTO.crearUsuarioMedianteSubject(subjectParaReutilizarCreate);
         if(!resultadoCreateDTO.esExitoso()){
@@ -41,7 +41,7 @@ public class UpdateUsuarioDTO extends CreateUsuarioDTO{
         } catch (NumberFormatException e) {
             return Resultado.error("Error: el campo 'id' debe ser numérico");
         }
-        UpdateUsuarioDTO updateUsuarioDTO =  new UpdateUsuarioDTO(idDto, createUsuarioDTO.nombre, createUsuarioDTO.apellido, createUsuarioDTO.email, createUsuarioDTO.telefono, createUsuarioDTO.password, createUsuarioDTO.rol,null,null);
+        UpdateUsuarioDTO updateUsuarioDTO =  new UpdateUsuarioDTO(idDto, createUsuarioDTO.nombre, createUsuarioDTO.email, createUsuarioDTO.password, createUsuarioDTO.rol);
         return Resultado.ok(updateUsuarioDTO);
     }
 
@@ -50,9 +50,7 @@ public class UpdateUsuarioDTO extends CreateUsuarioDTO{
         return "Usuario actualizado {" +
                 "id=" + id +
                 ", nombre='" + super.nombre + '\'' +
-                ", apellido='" + apellido + '\'' +
                 ", email='" + email + '\'' +
-                ", telefono='" + telefono + '\'' +
                 ", password='" + password + '\'' +
                 ", rol='" + rol + '\'' +
                 '}';
@@ -62,9 +60,7 @@ public class UpdateUsuarioDTO extends CreateUsuarioDTO{
         return "Usuario actualizado {\r\n" +
                 "  id = " + id + "\r\n" +
                 "  nombre = '" + nombre + "'\r\n" +
-                "  apellido = '" + apellido + "'\r\n" +
                 "  email = '" + email + "'\r\n" +
-                "  telefono = '" + telefono + "'\r\n" +
                 "  password = '" + password + "'\r\n" +
                 "  rol = '" + rol + "'\r\n" +
                 "}";
