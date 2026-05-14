@@ -24,13 +24,24 @@ public class CreateProducto {
         SMTPClient smtpClientResponse = new SMTPClient(server,receptor,emisor);
         Resultado<CreateProductoDTO> resultadoCreateProducto = CreateProductoDTO.createProductoFromSubject(subject);
         if(!resultadoCreateProducto.esExitoso()){
-            smtpClientResponse.sendDataToServer("SQL Create Producto: Fallo Campos", resultadoCreateProducto.getError() + "\r\n");
+            String msg = "Error: " + resultadoCreateProducto.getError();
+            System.out.println("[PRODUCTOS][CREATE] ERROR: " + msg);
+            boolean enviado = smtpClientResponse.sendDataToServerWithStatus("Error", (msg + "\r\n"));
+            if (!enviado) {
+                System.out.println("[SMTP][ERROR] No se pudo enviar la respuesta por correo (posible relay denied). ");
+            }
             return;
         }
         CreateProductoDTO createProductoDTO = resultadoCreateProducto.getValor();
         CreateSQLQuery createSQLQuery = new CreateSQLQuery();
         String strCreateProducto = createSQLQuery.executeInsertProductoQuery(pgsqlClient,createProductoDTO);
-        smtpClientResponse.sendDataToServer("SQL CreateProducto",strCreateProducto + "\r\n");
+
+        System.out.println("[PRODUCTOS][CREATE] RESULT:\n" + strCreateProducto);
+        boolean esError = strCreateProducto != null && strCreateProducto.toLowerCase().startsWith("error");
+        boolean enviado = smtpClientResponse.sendDataToServerWithStatus(esError ? "Error" : "Éxito", strCreateProducto + "\r\n");
+        if (!enviado) {
+            System.out.println("[SMTP][ERROR] No se pudo enviar la respuesta por correo (posible relay denied). ");
+        }
     }
     public static void executeCreateProducto(String emisor,String receptor,String server,String subject){
         //subject = GeneralMethods.parsearSubjectComillaTriple(subject);

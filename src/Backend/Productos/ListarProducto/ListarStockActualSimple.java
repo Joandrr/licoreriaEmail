@@ -29,7 +29,9 @@ public class ListarStockActualSimple {
             ComparadorSigno comparadorSigno = null;
             ListarStockActualSQLQuery listarStockActualSQLQuery = new ListarStockActualSQLQuery();
             String strListarProducto = listarStockActualSQLQuery.executeListarProductos(pgsqlClient,comparadorSigno);
-            smtpClientResponse.sendDataToServer("SQL Listar Productos ",strListarProducto + "\r\n");
+            System.out.println("[PRODUCTOS][LISTAR_SIMPLE] RESULT:\n" + strListarProducto);
+            boolean esError = strListarProducto != null && strListarProducto.toLowerCase().startsWith("error");
+            smtpClientResponse.sendDataToServer(esError ? "Error" : "Listando los Productos", (esError ? strListarProducto : ("Listando los Productos\r\n" + strListarProducto)) + "\r\n");
             return;
         }
         Resultado<ComparadorSigno> resultadoListaSimple = ComparadorSigno.crearComparadorFromSubject(subject);
@@ -41,7 +43,9 @@ public class ListarStockActualSimple {
         System.out.println(comparadorSigno);
         ListarStockActualSQLQuery listarStockActualSQLQuery = new ListarStockActualSQLQuery();
         String strListarProducto = listarStockActualSQLQuery.executeListarProductos(pgsqlClient,comparadorSigno);
-        smtpClientResponse.sendDataToServer("SQL Listar Productos ",strListarProducto + "\r\n");
+        System.out.println("[PRODUCTOS][LISTAR_SIMPLE] RESULT:\n" + strListarProducto);
+        boolean esError = strListarProducto != null && strListarProducto.toLowerCase().startsWith("error");
+        smtpClientResponse.sendDataToServer(esError ? "Error" : "Listando los Productos", (esError ? strListarProducto : ("Listando los Productos\r\n" + strListarProducto)) + "\r\n");
     }
     public static void executeListarStockActualSimple(String emisor,String receptor,String server,String subject){
         String listarTodosCommand = """

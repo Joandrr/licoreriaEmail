@@ -27,7 +27,9 @@ public class ListarStockActualIntervalo {
         System.out.println(comparadorSigno);
         ListarStockActualSQLQuery listarStockActualSQLQuery = new ListarStockActualSQLQuery();
         String strListarProducto = listarStockActualSQLQuery.executeListarProductosBetween(pgsqlClient,comparadorSigno);
-        smtpClientResponse.sendDataToServer("SQL Listar Productos ",strListarProducto + "\r\n");
+        System.out.println("[PRODUCTOS][LISTAR_INTERVALO] RESULT:\n" + strListarProducto);
+        boolean esError = strListarProducto != null && strListarProducto.toLowerCase().startsWith("error");
+        smtpClientResponse.sendDataToServer(esError ? "Error" : "Listando los Productos", (esError ? strListarProducto : ("Listando los Productos\r\n" + strListarProducto)) + "\r\n");
     }
     public static void executeListarStockActualIntervalo(String emisor,String receptor,String server,String subject){
         //subject = GeneralMethods.parsearSubjectComillaTriple(subject);

@@ -207,6 +207,11 @@ public class SMTPClient {
     }
     //antes de usar el metodo requiero instanciar el emisor y receptor
     public void sendDataToServer(String subject,String context){
+        this.sendDataToServerWithStatus(subject, context);
+    }
+
+    // Igual que sendDataToServer, pero retorna si el envío SMTP fue exitoso.
+    public boolean sendDataToServerWithStatus(String subject, String context) {
         Socket socket = null;
         DataOutputStream output = null;
         BufferedReader input = null;
@@ -225,6 +230,7 @@ public class SMTPClient {
                 this.executeDataSubject(subject,context,input,output);
                 this.executeQuitCommand(input,output);
             }
+            return true;
         } catch (Exception e) {
             System.out.println("throw - " + e.getMessage());
             try {
@@ -233,6 +239,7 @@ public class SMTPClient {
                 }
             } catch (Exception ignore) {
             }
+            return false;
         } finally {
             try {
                 if (socket != null && input != null && output != null) {

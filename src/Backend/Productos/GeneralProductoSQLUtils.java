@@ -9,8 +9,11 @@ import java.sql.SQLException;
 
 public class GeneralProductoSQLUtils {
     public static UpdateProductoDTO findProductoById(Connection con, long id) throws SQLException {
-        //"INSERT INTO productos (nombre, descripcion, precio_venta, stock_actual, stock_minimo) VALUES (?, ?, ?, ?, ?)";
-        String SQL_FIND = "SELECT id, nombre, descripcion, precio_venta, stock_actual, stock_minimo, estado, deleted_at FROM productos WHERE id = ?";
+        String SQL_FIND =
+                "SELECT p.id, p.nombre, p.descripcion, p.precio, s.cantidad, s.min, s.max " +
+                "FROM producto p " +
+                "LEFT JOIN stock s ON s.producto_id = p.id " +
+                "WHERE p.id = ?";
 
         try (PreparedStatement ps = con.prepareStatement(SQL_FIND)) {
             ps.setLong(1, id);
@@ -21,11 +24,11 @@ public class GeneralProductoSQLUtils {
                     productoDTO.id = rs.getLong("id");
                     productoDTO.nombre = rs.getString("nombre");
                     productoDTO.descripcion = rs.getString("descripcion");
-                    productoDTO.precioVenta = rs.getFloat("precio_venta");
-                    productoDTO.stockActual = rs.getInt("stock_actual");
-                    productoDTO.stockMinimo = rs.getInt("stock_minimo");
-                    productoDTO.estado = rs.getString("estado");
-                    productoDTO.deleteAt = rs.getString("deleted_at");
+                    productoDTO.precioVenta = rs.getBigDecimal("precio").floatValue();
+                    productoDTO.stockActual = rs.getInt("cantidad");
+                    productoDTO.stockMinimo = rs.getInt("min");
+                    productoDTO.estado = null;
+                    productoDTO.deleteAt = null;
                     return productoDTO;
                 }
                 return null;

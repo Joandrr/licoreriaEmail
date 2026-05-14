@@ -41,3 +41,42 @@
 // subject: insertarUsuario["Juan Perez","juanperez@gmail.com","123456","cliente"]
 
 
+// --------------------
+// PRODUCTOS
+// --------------------
+
+// 1) LISTAR PRODUCTOS (todos)
+// Subject:
+//   listarProductos["*"]
+// Respuesta esperada (subject de retorno):
+//   "Listando los Productos" o "Error"
+
+// Ejemplo estilo parcial:
+// mail from : tuCorreo@gmail.com
+// rcpt to: grupo05sc@tecnoweb.org.bo
+// subject: listarProductos["*"]
+
+
+// 2) INSERTAR / CREAR PRODUCTO
+// Subject (alias nuevo):
+//   insertarProducto["nombre","descripcion","precio","stockMin","stockCantidad"]
+// Subject (comando original que ya existía):
+//   createProducto["nombre","descripcion","precio","stockMin","stockCantidad"]
+// Nota: En la BD real, stock también tiene campo max; el sistema lo calcula como max(stockCantidad, stockMin).
+// Respuesta esperada (subject de retorno):
+//   "Éxito" o "Error"
+
+// Ejemplo estilo parcial:
+// mail from : tuCorreo@gmail.com
+// rcpt to: grupo05sc@tecnoweb.org.bo
+// subject: insertarProducto["Cerveza","Lata 355ml","10.50","5","20"]
+
+// 3) LISTADOS EXISTENTES (por stock)
+// Subject (sin filtro):
+//   listarProductoSimple["*"]
+// Subject (comparador):
+//   listarProductoSimple[">10"]
+// Subject (intervalo):
+//   listarProductoIntervalo["10","20"]
+
+

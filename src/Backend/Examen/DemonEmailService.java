@@ -6,14 +6,11 @@ import Backend.Pagos.DeletePago.DeletePago;
 import Backend.Pagos.ListPagos.ListarPagoDeVenta;
 import Backend.Productos.CambiarEstado.CambiarEstadoProducto;
 import Backend.Productos.CreateProducto.CreateProducto;
+import Backend.Productos.ListarProducto.ListarProductos;
 import Backend.Productos.ListarProducto.ListarStockActualIntervalo;
 import Backend.Productos.ListarProducto.ListarStockActualSimple;
 import Backend.Productos.UpdateProducto.UpdateProducto;
-import Backend.Servicio.CambiarEstado.CambiarEstadoServicio;
-import Backend.Servicio.CreateServicio.CreateServicio;
-import Backend.Servicio.ListarServicio.ListarServicioPrecioIntervalo;
-import Backend.Servicio.ListarServicio.ListarServicioPrecioSimple;
-import Backend.Servicio.UpdateServicio.UpdateServicio;
+
 import Backend.Usuarios.CambiarEstado.CambiarEstadoUsuario;
 import Backend.Usuarios.CreateUser.CreateUsuario;
 import Backend.Usuarios.ListarUser.ListarUsuario;
@@ -204,9 +201,14 @@ public class DemonEmailService {
             return;
         }
         //Para Productos
-        if(comando.equalsIgnoreCase("createProducto")){
+        if(comando.equalsIgnoreCase("createProducto") || comando.equalsIgnoreCase("insertarProducto") || comando.equalsIgnoreCase("insertarProductos")){
             System.out.println("Ejecutando Crear Producto");
             CreateProducto.executeCreateProductoDemon(emisor,receptor,server,subject);
+            return;
+        }
+        if(comando.equalsIgnoreCase("listarProductos")){
+            System.out.println("Ejecutando Listar Productos");
+            ListarProductos.executeListarProductosDemon(emisor,receptor,server,subject);
             return;
         }
         if(comando.equalsIgnoreCase("updateProducto")){
@@ -246,32 +248,7 @@ public class DemonEmailService {
             Backend.Movimientos.ListMovimiento.Lista.executeListMovimientosDemon(emisor,receptor,server,subject);
             return;
         }
-        //Para Servicios
-        if(comando.equalsIgnoreCase("createServicio")){
-            System.out.println("Ejecutando Crear Servicio");
-            CreateServicio.executeCreateServicioDemon(emisor,receptor,server,subject);
-            return;
-        }
-        if(comando.equalsIgnoreCase("updateServicio")){
-            System.out.println("Ejecutando Update Servicio");
-            UpdateServicio.executeUpdateServicioDemon(emisor,receptor,server,subject);
-            return;
-        }
-        if(comando.equalsIgnoreCase("listarServicioSimple")){
-            System.out.println("Ejecutando Listar Servicio Simple");
-            ListarServicioPrecioSimple.executeListarServicioPrecioSimpleDemon(emisor,receptor,server,subject);
-            return;
-        }
-        if(comando.equalsIgnoreCase("listarServicioIntervalo")){
-            System.out.println("Ejecutando Listar Servicio Intervalo");
-            ListarServicioPrecioIntervalo.executeListarServiciosPrecioIntervaloDemon(emisor,receptor,server,subject);
-            return;
-        }
-        if(comando.equalsIgnoreCase("cambiarEstadoServicio")){
-            System.out.println("Ejecutando Cambio de estado de Servicio");
-            CambiarEstadoServicio.executeCambiarEstadoServicioDemon(emisor,receptor,server,subject);
-            return;
-        }
+
         //Para Pagos
         if(comando.equalsIgnoreCase("createPago")){
             System.out.println("Ejecutando Crear Pago");

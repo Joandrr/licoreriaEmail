@@ -8,7 +8,9 @@ import java.sql.*;
 
 public class ListarStockActualSQLQuery {
     private static final String LIST_BASE_SELECT =
-            "SELECT id, nombre, descripcion, precio_venta, stock_actual, stock_minimo, estado FROM productos";
+            "SELECT p.id, p.nombre, p.descripcion, p.precio, s.cantidad, s.min, s.max " +
+            "FROM producto p " +
+            "LEFT JOIN stock s ON s.producto_id = p.id";
 
 
     public String executeListarProductos(PGSQLClient pgsqlClient, ComparadorSigno comparador) {
@@ -25,14 +27,14 @@ public class ListarStockActualSQLQuery {
             PreparedStatement ps;
             if (esComparadorNulo) {
                 // Sin filtro: listar todos
-                sql = LIST_BASE_SELECT + " ORDER BY id ASC";
+                sql = LIST_BASE_SELECT + " ORDER BY p.id ASC";
                 ps = connection.prepareStatement(sql);
             } else {
                 String operador = mapOperadorSeguro(comparador.signo);
                 if (operador == null) {
                     return "Error: operador inválido: " + comparador.signo;
                 }
-                sql = LIST_BASE_SELECT + " WHERE stock_actual " + operador + " ? AND deleted_at is null ORDER BY id ASC";
+                sql = LIST_BASE_SELECT + " WHERE s.cantidad " + operador + " ? ORDER BY p.id ASC";
                 ps = connection.prepareStatement(sql);
                 ps.setBigDecimal(1, new java.math.BigDecimal(comparador.valor.toString()));
             }
@@ -45,7 +47,7 @@ public class ListarStockActualSQLQuery {
                 }
 
                 if (result.length() == 0) {
-                    return "[]";
+                    return "No se encontraron productos registrados.";
                 }
                 return result.toString();
             }
@@ -66,7 +68,7 @@ public class ListarStockActualSQLQuery {
         String databaseUrl = "jdbc:postgresql://" + pgsqlClient.getServer() + ":5432/" + pgsqlClient.getBdName();
 
         String sql = LIST_BASE_SELECT +
-                " WHERE deleted_at is null AND stock_actual BETWEEN ? AND ? ORDER BY id ASC";
+            " WHERE s.cantidad BETWEEN ? AND ? ORDER BY p.id ASC";
 
         try (Connection connection = DriverManager.getConnection(
                 databaseUrl, pgsqlClient.getUser(), pgsqlClient.getPassword());
@@ -117,18 +119,18 @@ public class ListarStockActualSQLQuery {
                         "ID: %d\r\n" +
                         "Nombre: %s\r\n" +
                         "Descripción: %s\r\n" +
-                        "Precio venta: %s\r\n" +
-                        "Stock actual: %d\r\n" +
-                        "Stock mínimo: %d\r\n" +
-                        "Estado: %s\r\n" +
+                "Precio: %s\r\n" +
+                "Stock (cantidad): %d\r\n" +
+                "Stock (min): %d\r\n" +
+                "Stock (max): %d\r\n" +
                         "--------------------------\r\n",
-                rs.getLong("id"),
-                rs.getString("nombre"),
-                rs.getString("descripcion"),
-                rs.getBigDecimal("precio_venta"),
-                rs.getInt("stock_actual"),
-                rs.getInt("stock_minimo"),
-                rs.getString("estado")
+            rs.getLong("id"),
+            rs.getString("nombre"),
+            rs.getString("descripcion"),
+            rs.getBigDecimal("precio"),
+            rs.getInt("cantidad"),
+            rs.getInt("min"),
+            rs.getInt("max")
         );
     }
 

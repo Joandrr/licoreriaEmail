@@ -7,10 +7,7 @@ import Backend.Productos.CreateProducto.CreateProducto;
 import Backend.Productos.ListarProducto.ListarStockActualIntervalo;
 import Backend.Productos.ListarProducto.ListarStockActualSimple;
 import Backend.Productos.UpdateProducto.UpdateProducto;
-import Backend.Servicio.CreateServicio.CreateServicio;
-import Backend.Servicio.ListarServicio.ListarServicioPrecioIntervalo;
-import Backend.Servicio.ListarServicio.ListarServicioPrecioSimple;
-import Backend.Servicio.UpdateServicio.UpdateServicio;
+
 import Backend.Usuarios.CreateUser.CreateUsuario;
 import Backend.Usuarios.ListarUser.ListarUsuario;
 import Backend.Usuarios.UpdateUser.UpdateUsuario;
@@ -94,27 +91,7 @@ public class TestExamen {
                 ListarStockActualIntervalo.executeListarStockActualIntervalo(emisor,receptor,server,entrada);
                 continue;
             }
-            //Para Servicios
-            if(comando.equalsIgnoreCase("createServicio")){
-                System.out.println("Ejecutando Crear Servicio");
-                CreateServicio.executeCreateServicio(emisor,receptor,server,entrada);
-                continue;
-            }
-            if(comando.equalsIgnoreCase("updateServicio")){
-                System.out.println("Ejecutando Update Servicio");
-                UpdateServicio.executeUpdateServicio(emisor,receptor,server,entrada);
-                continue;
-            }
-            if(comando.equalsIgnoreCase("listarServicioSimple")){
-                System.out.println("Ejecutando Listar Servicio Simple");
-                ListarServicioPrecioSimple.executeListarServicioPrecioSimple(emisor,receptor,server,entrada);
-                continue;
-            }
-            if(comando.equalsIgnoreCase("listarServicioIntervalo")){
-                System.out.println("Ejecutando Listar Servicio Intervalo");
-                ListarServicioPrecioIntervalo.executeListarServiciosPrecioIntervalo(emisor,receptor,server,entrada);
-                continue;
-            }
+
             //Para Pagos
             if(comando.equalsIgnoreCase("createPago")){
                 System.out.println("Ejecutando Crear Pago");
