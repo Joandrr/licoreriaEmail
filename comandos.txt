@@ -1,2 +1,43 @@
-// usuarios
+// ==========================================
+// Comandos por CORREO (grupo05)
+// Enviar email a:
+//   rcpt to: grupo05sc@tecnoweb.org.bo
+// El comando va en el Subject con formato:
+//   comando["arg1","arg2",...]
+// ==========================================
+
+// --------------------
+// USUARIOS
+// --------------------
+
+// 1) LISTAR USUARIOS
+// Subject (todos):
+//   listarUsuarios["*"]
+// Subject (por rol):
+//   listarUsuarios["cliente"]
+//   listarUsuarios["vendedor"]
+//   listarUsuarios["propietario"]
+// Respuesta esperada (subject de retorno):
+//   "Listando las Personas" o "Error"
+
+// Ejemplo estilo parcial:
+// mail from : tuCorreo@gmail.com
+// rcpt to: grupo05sc@tecnoweb.org.bo
+// subject: listarUsuarios["*"]
+
+
+// 2) INSERTAR / CREAR USUARIO
+// Subject (alias nuevo):
+//   insertarUsuario["Nombre Apellido","correo@gmail.com","password","rol"]
+
+// Roles permitidos:
+//   propietario | vendedor | cliente
+// Respuesta esperada (subject de retorno):
+//   "Éxito" o "Error"
+
+// Ejemplo estilo parcial:
+// mail from : tuCorreo@gmail.com
+// rcpt to: grupo05sc@tecnoweb.org.bo
+// subject: insertarUsuario["Juan Perez","juanperez@gmail.com","123456","cliente"]
+
 

@@ -24,7 +24,7 @@ public class CreateUsuario {
         Resultado<CreateUsuarioDTO> resultadoCreateUser = CreateUsuarioDTO.crearUsuarioMedianteSubject(subject);
         if(!resultadoCreateUser.esExitoso()){
             System.out.println("[USUARIOS][CREATE] ERROR: " + resultadoCreateUser.getError());
-            smtpClientResponse.sendDataToServer("SQL Create User: Fallo Campos",resultadoCreateUser.getError() + "\r\n");
+            smtpClientResponse.sendDataToServer("Error",("Error: " + resultadoCreateUser.getError() + "\r\n"));
             return;
         }
         CreateUsuarioDTO createUsuarioDTO = resultadoCreateUser.getValor();
@@ -32,7 +32,17 @@ public class CreateUsuario {
 
         String strCreateUser = createSQLQuery.executeInsertUserQuery(pgsqlClient, createUsuarioDTO);
         System.out.println("[USUARIOS][CREATE] RESULT:\n" + strCreateUser);
-        smtpClientResponse.sendDataToServer("SQL CreateUser",strCreateUser + "\r\n");
+
+        boolean esError = strCreateUser != null && (
+                strCreateUser.toLowerCase().startsWith("error") ||
+                strCreateUser.toLowerCase().startsWith("error:") ||
+                strCreateUser.toLowerCase().startsWith("error de base") ||
+                strCreateUser.toLowerCase().startsWith("error de") ||
+                strCreateUser.toLowerCase().startsWith("error ")
+        );
+
+        String subjectRespuesta = esError ? "Error" : "Éxito";
+        smtpClientResponse.sendDataToServer(subjectRespuesta, strCreateUser + "\r\n");
     }
     public static void executeCreateUsuario(String emisor,String receptor,String server,String subject){
         ///subject = GeneralMethods.parsearSubjectComillaTriple(subject);

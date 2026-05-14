@@ -116,18 +116,21 @@ public class DemonEmailService {
         //podriamos hacer un comando previo para que busque en los comandos solamente si no lo encuentra retornar que no hay ese comando
         boolean tieneCorchetesYComillas = TecnoUtils.tieneCorchetesYComillas(subject);
         boolean tieneCorchetes = subject != null
-                && subject.contains("[")
-                && subject.contains("]")
-                && subject.indexOf('[') < subject.lastIndexOf(']');
+            && subject.contains("[")
+            && subject.contains("]")
+            && subject.indexOf('[') < subject.lastIndexOf(']');
         if (!tieneCorchetes && !tieneCorchetesYComillas) {
-            smtpClient.sendDataToServer("ERROR.. COMANDO NO VALIDO","Comando no valido: se esperaban corchetes, ejemplo: comando[\"a\",\"b\"]\r\n");
+            smtpClient.sendDataToServer(
+                "Error",
+                "Error: comando no valido. Se esperaban corchetes, ejemplo: comando[\"a\",\"b\"]\r\n"
+            );
             return;
         }
         int indexCorcheteInicial = subject.indexOf("[");
         String comando = subject.substring(0,indexCorcheteInicial);
         System.out.println("comando: "+ comando);
         // Para Usuarios
-        if(comando.equalsIgnoreCase("createUser")){
+        if(comando.equalsIgnoreCase("createUser") || comando.equalsIgnoreCase("insertarUsuario")){
             System.out.println("Ejecutando Insercion de Usuario...");
             CreateUsuario.executeCreateUsuarioDemon(emisor,receptor,server,subject);
             return;
@@ -292,7 +295,7 @@ public class DemonEmailService {
             return;
         }
         /// demas metodos
-        smtpClient.sendDataToServer("ERROR.. COMANDO NO ENCONTRADO","Comando no encontrado\r\n");
+        smtpClient.sendDataToServer("Error","Error: comando no encontrado\r\n");
         return;
 
     }

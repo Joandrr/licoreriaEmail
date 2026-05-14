@@ -36,16 +36,24 @@ public class TecnoUtils {
 //    }
     //se asume que vendra inputs tipo LIST["*"], algo que tenga corchetes y data dentro
     public static String[] procesarString(String cadena) {
+        if (cadena == null) return new String[0];
         int indexCorcheteInicial = cadena.indexOf("[");
         int indexCorcheteFinal = cadena.lastIndexOf("]");
         System.out.println("corchete inicial: " + indexCorcheteInicial);
         System.out.println("corchete final: " + indexCorcheteFinal);
+        if (indexCorcheteInicial == -1 || indexCorcheteFinal == -1 || indexCorcheteFinal <= indexCorcheteInicial) {
+            return new String[0];
+        }
         String data = cadena.substring(indexCorcheteInicial,indexCorcheteFinal + 1);
         String contenido = data.replaceAll("[\\[\\]]", "");
         System.out.println("contenido: " + contenido);
         String limpio = contenido.replace("\"", "");
         System.out.println("limpio: " + limpio);
-        return limpio.split(",",-1);
+        String[] parts = limpio.split(",",-1);
+        for (int i = 0; i < parts.length; i++) {
+            if (parts[i] != null) parts[i] = parts[i].trim();
+        }
+        return parts;
     }
 
     public static boolean tieneCorchetesYComillas(String cadena) {
